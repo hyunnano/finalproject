@@ -1,6 +1,7 @@
-buildscript {
+//Querydsl 사용을 위한 설정 (최상단에서 옮겨서 사용, 버전마다 달라서)
+buildscript{
     ext{
-        queryDslVersion= "5.0.0"
+        queryDslVersion = "5.0.0"
     }
 }
 
@@ -10,7 +11,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
 }
 
-group = 'net.manager'
+group = 'net.ict'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
 
@@ -36,26 +37,36 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
-    //test때 사용하는 롬복
+    //유효성 검사할때 필요
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    //타임리프의 레이아웃 사용
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
+
+    //test 할때를 필요
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
-
+    //Querydsl 사용을 위한 설정
     implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    annotationProcessor(
+            "javax.persistence:javax.persistence-api",
+            "javax.annotation:javax.annotation-api",
+            "com.querydsl:querydsl-apt:${queryDslVersion}:jpa"
+    )
 
-    implementation 'org.modelmapper:modelmapper:3.1.0'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
+//Querydsl 사용을 위한 설정, Entity클래스를 사용하기 위한 쿼리가 생성되는 위치를 정해줌
 sourceSets {
-    main{
+    main {
         java {
-            srcDirs = ["$projectDir/src/main/java", "$projectDir/build/generated"]
+            srcDirs = ["$projectDir/src/main/java",
+                       "$projectDir/build/generated"]
         }
     }
 }
